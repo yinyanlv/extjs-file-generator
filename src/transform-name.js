@@ -1,4 +1,4 @@
-let regex = /[a-zA-Z][a-z]*/g;
+const regex = /[a-zA-Z][a-z]*/g;
 
 class TransformName {
 
