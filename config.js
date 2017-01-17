@@ -1,1 +1,4 @@
-var a = 1;
+module.exports = {
+  ns: 'App',
+  basePath: ''
+};

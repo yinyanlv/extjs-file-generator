@@ -1,4 +1,4 @@
-const regex = /[a-zA-Z][a-z]*/g;
+const SPLIT_REGEX = /[a-zA-Z][a-z]*/g;
 
 class TransformName {
 
@@ -8,7 +8,7 @@ class TransformName {
 
     name = name.trim();
 
-    while (temp = regex.exec(name)) {
+    while (temp = SPLIT_REGEX.exec(name)) {
       result.push(temp[0]);
     }
 
