@@ -7,16 +7,27 @@ let creator = require('./lib/creator');
 let utils = require('./lib/utils');
 let pageMap = require('./extjsConfig');
 
-let moduleNames = utils.getNeedCreateModuleList(pageMap);
-let totalCount = moduleNames.length;
-let curCount = 0;
+let compilerCacheList = [];
 
-for (let name of moduleNames) {
-  creator.writeFileByModuleName(name, 'var a = 2;', function () {
+for (let templatePath of config.templatePathList) {
+  creator.readFile(templatePath, (data) => {
+    let result = compiler.compile(data);
 
-    curCount++;
-    console.log('*** INFO: ' + name + ' has created! ***  ---' + (curCount / totalCount * 100).toFixed(2) + '%---');
+    compilerCacheList.push(result);
 
-    if (curCount === totalCount) console.log('\ncompleted!!!');
+    let moduleNames = utils.getNeedCreateModuleList(pageMap, compilerCacheList);
+    let totalCount = moduleNames.length;
+    let createdCount = 0;
+
+    for (let name of moduleNames) {
+      creator.writeFileByModuleName(name, compiler.render(compilerCacheList[0].template, name), function () {
+
+        createdCount++;
+        console.log('*** INFO: ' + name + ' has created! ***  ---' + (createdCount / totalCount * 100).toFixed(2) + '%---');
+
+        if (createdCount === totalCount) console.log('\ncompleted!!!');
+      });
+    }
   });
 }
+
