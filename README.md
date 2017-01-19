@@ -1,2 +1,2 @@
 ## extjs file generator
-- node >= 6.9.*
+- **node >= 6.9.***
