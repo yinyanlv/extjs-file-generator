@@ -13,7 +13,6 @@ co(function* () {
   for (let templatePath of config.templatePathList) {
 
     let templateStr = yield creator.readFile(templatePath);
-
     let result = compiler.compile(templateStr);
 
     compilerCacheMap[result.moduleName] = result;
@@ -30,12 +29,15 @@ co(function* () {
       compiler.render(compilerCacheMap[curModule.templateName].template, curModule.moduleName));
 
     createdCount++;
+
     console.log('*** INFO: ' + curModule.moduleName + ' has created! ***  ---' + (createdCount / totalCount * 100).toFixed(2) + '%---');
+
     if (createdCount === totalCount) console.log('\ncompleted!!!');
   }
 }).catch((err) => {
 
   console.log(err);
+
   console.log('\nfailed!!!')
 });
 
