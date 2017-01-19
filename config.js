@@ -1,5 +1,6 @@
 module.exports = {
   namespace: 'App',
+  isOverrideMode: true,  // 是否覆盖已存在的文件
   destBasePath: './dest',
   templatePathList: [
     './test/view/Viewport.js',
