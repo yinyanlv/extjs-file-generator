@@ -1,5 +1,4 @@
-let fs = require('fs');
-let path = require('path');
+let co = require('co');
 
 let config = require('./config');
 let compiler = require('./lib/compiler');
@@ -7,27 +6,36 @@ let creator = require('./lib/creator');
 let utils = require('./lib/utils');
 let pageMap = require('./extjsConfig');
 
-let compilerCacheList = [];
+let compilerCacheMap = {};
 
-for (let templatePath of config.templatePathList) {
-  creator.readFile(templatePath, (data) => {
-    let result = compiler.compile(data);
+co(function* () {
 
-    compilerCacheList.push(result);
+  for (let templatePath of config.templatePathList) {
 
-    let moduleNames = utils.getNeedCreateModuleList(pageMap, compilerCacheList);
-    let totalCount = moduleNames.length;
-    let createdCount = 0;
+    let templateStr = yield creator.readFile(templatePath);
 
-    for (let name of moduleNames) {
-      creator.writeFileByModuleName(name, compiler.render(compilerCacheList[0].template, name), function () {
+    let result = compiler.compile(templateStr);
 
-        createdCount++;
-        console.log('*** INFO: ' + name + ' has created! ***  ---' + (createdCount / totalCount * 100).toFixed(2) + '%---');
+    compilerCacheMap[result.moduleName] = result;
+  }
 
-        if (createdCount === totalCount) console.log('\ncompleted!!!');
-      });
-    }
-  });
-}
+  let modules = utils.getNeedCreateModuleList(pageMap, compilerCacheMap);
+  let totalCount = modules.length;
+  let createdCount = 0;
+
+  for (let curModule of modules) {
+
+    yield creator.writeFileByModuleName(
+      curModule.moduleName,
+      compiler.render(compilerCacheMap[curModule.templateName].template, curModule.moduleName));
+
+    createdCount++;
+    console.log('*** INFO: ' + curModule.moduleName + ' has created! ***  ---' + (createdCount / totalCount * 100).toFixed(2) + '%---');
+    if (createdCount === totalCount) console.log('\ncompleted!!!');
+  }
+}).catch((err) => {
+
+  console.log(err);
+  console.log('\nfailed!!!')
+});
 
