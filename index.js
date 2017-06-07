@@ -1,9 +1,9 @@
 let co = require('co');
 
 let config = require('./config');
-let compiler = require('./lib/compiler');
-let creator = require('./lib/creator');
-let utils = require('./lib/utils');
+let compiler = require('./src/compiler');
+let creator = require('./src/creator');
+let utils = require('./src/utils');
 let pageMap = require('./extjsConfig');
 
 let compilerCacheMap = {};
